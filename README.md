@@ -12,6 +12,24 @@
 - `Dockerfile` — инструкция для сборки Docker-образа
 - `.dockerignore` — список файлов, которые не нужно класть в Docker-образ
 - `.github/workflows/ci-cd.yml` — сценарий для GitHub Actions
+- `src/server.py` — простой HTTP-сервер для запуска приложения в Kubernetes
+
+## HTTP-сервер
+
+Для Kubernetes приложение должно работать постоянно, а не просто быстро
+запускаться и завершаться. Поэтому добавлен небольшой HTTP-сервер.
+
+Доступные endpoints:
+
+- `/health` — проверка, что сервис работает
+- `/task` — данные тестовой задачи
+
+Значения задачи можно менять через переменные окружения:
+
+- `TASK_ID`
+- `TASK_DESCRIPTION`
+- `TASK_PRIORITY`
+- `TASK_STATUS`
 
 ## Docker
 
@@ -27,7 +45,23 @@ docker build -t task-model:local .
 Запустить приложение:
 
 ```bash
-docker run --rm task-model:local
+docker run --rm -p 8000:8000 task-model:local
+```
+
+Проверить, что сервер работает:
+
+```bash
+curl http://localhost:8000/health
+curl http://localhost:8000/task
+```
+
+Запустить приложение со своими настройками задачи:
+
+```bash
+docker run --rm -p 8000:8000 \
+  -e TASK_DESCRIPTION="Task from Docker" \
+  -e TASK_PRIORITY=5 \
+  task-model:local
 ```
 
 Запустить тесты внутри контейнера:

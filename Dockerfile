@@ -12,4 +12,6 @@ COPY src ./src
 COPY tests ./tests
 COPY pyproject.toml README.md ./
 
-CMD ["python", "-m", "src.main"]
+EXPOSE 8000
+
+CMD ["python", "-m", "src.server"]
