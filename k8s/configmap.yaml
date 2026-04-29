@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: task-model-config
+  namespace: lab5
+data:
+  TASK_ID: "1"
+  TASK_DESCRIPTION: "Task from Kubernetes ConfigMap"
+  TASK_PRIORITY: "4"
+  TASK_STATUS: "new"

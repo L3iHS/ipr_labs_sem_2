@@ -106,6 +106,44 @@ ghcr.io/l3ihs/ipr_labs_sem_2:latest
 Дальше Kubernetes сможет взять этот образ из registry и запустить его в
 кластере.
 
+## Kubernetes
+
+Манифесты Kubernetes лежат в папке `k8s/`.
+
+Они создают:
+
+- `Namespace` `lab5`
+- `ConfigMap` с настройками задачи
+- `Secret` с примером секретного значения
+- `Deployment` с двумя pod приложения
+- `Service` для доступа к приложению через `localhost:30080`
+
+Запустить приложение в Kubernetes:
+
+```bash
+kubectl apply -f k8s/
+```
+
+Проверить ресурсы:
+
+```bash
+kubectl get all -n lab5
+kubectl get pods -n lab5
+```
+
+Проверить приложение:
+
+```bash
+curl http://localhost:30080/health
+curl http://localhost:30080/task
+```
+
+Удалить ресурсы:
+
+```bash
+kubectl delete namespace lab5
+```
+
 ---
 
 # Исходная лабораторная работа №2: Модель задачи, дескрипторы и `@property`
