@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - lab_2_task_model_descriptors
   pull_request:
 
 permissions:
@@ -42,9 +41,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Prepare image name
-        run: echo "IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -59,7 +55,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.IMAGE_NAME }}
+          images: ghcr.io/l3ihs/ipr_labs_sem_2
           tags: |
             type=ref,event=branch
             type=sha,prefix=commit-

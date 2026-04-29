@@ -66,7 +66,7 @@ Registry — это хранилище Docker-образов.
 Пример имени образа:
 
 ```text
-ghcr.io/l3ihs/python_labs_sem_2:latest
+ghcr.io/l3ihs/ipr_labs_sem_2:latest
 ```
 
 Дальше Kubernetes сможет взять этот образ из registry и запустить его в
