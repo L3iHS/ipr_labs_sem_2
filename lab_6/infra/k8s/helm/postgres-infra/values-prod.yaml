@@ -1,0 +1,13 @@
+namespaceOverride: lab6-prod
+
+postgres:
+  password: CHANGE_ME
+  storage: 5Gi
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 256Mi
+  limits:
+    cpu: "1"
+    memory: 1Gi

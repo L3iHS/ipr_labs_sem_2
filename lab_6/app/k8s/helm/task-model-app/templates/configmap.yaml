@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: task-model-config
+  namespace: {{ include "task-model-app.namespace" . }}
+  labels:
+    {{- include "task-model-app.labels" . | nindent 4 }}
+data:
+  TASK_ID: {{ .Values.task.id | quote }}
+  TASK_DESCRIPTION: {{ .Values.task.description | quote }}
+  TASK_PRIORITY: {{ .Values.task.priority | quote }}
+  TASK_STATUS: {{ .Values.task.status | quote }}

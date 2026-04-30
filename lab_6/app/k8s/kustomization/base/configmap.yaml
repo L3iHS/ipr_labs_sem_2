@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: task-model-config
+  labels:
+    app: task-model
+data:
+  TASK_ID: "6"
+  TASK_DESCRIPTION: "Task from lab_6 Kustomize base"
+  TASK_PRIORITY: "3"
+  TASK_STATUS: "new"

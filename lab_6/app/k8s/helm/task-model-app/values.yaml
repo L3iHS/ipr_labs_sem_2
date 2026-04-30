@@ -1,0 +1,31 @@
+namespaceOverride: ""
+
+replicaCount: 1
+
+image:
+  repository: ghcr.io/l3ihs/ipr_labs_sem_2
+  tag: main
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+  nodePort: null
+
+task:
+  id: "6"
+  description: "Task from lab_6 Helm chart"
+  priority: "3"
+  status: new
+
+database:
+  url: postgresql://task_user:CHANGE_ME@postgres-0.postgres:5432/task_model
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 250m
+    memory: 128Mi

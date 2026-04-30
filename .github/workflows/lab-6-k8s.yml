@@ -1,0 +1,61 @@
+name: Lab 6 Kubernetes Manifests
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/lab-6-k8s.yml"
+      - "lab_6/**"
+  pull_request:
+    paths:
+      - ".github/workflows/lab-6-k8s.yml"
+      - "lab_6/**"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate Kustomize and Helm
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+
+      - name: Render infra Kustomize dev
+        run: kubectl kustomize lab_6/infra/k8s/kustomization/overlays/dev
+
+      - name: Render infra Kustomize prod
+        run: kubectl kustomize lab_6/infra/k8s/kustomization/overlays/prod
+
+      - name: Render app Kustomize dev
+        run: kubectl kustomize lab_6/app/k8s/kustomization/overlays/dev
+
+      - name: Render app Kustomize prod
+        run: kubectl kustomize lab_6/app/k8s/kustomization/overlays/prod
+
+      - name: Lint infra Helm chart
+        run: helm lint lab_6/infra/k8s/helm/postgres-infra
+
+      - name: Lint app Helm chart
+        run: helm lint lab_6/app/k8s/helm/task-model-app
+
+      - name: Render infra Helm dev
+        run: >
+          helm template task-model-db lab_6/infra/k8s/helm/postgres-infra
+          --namespace lab6-dev
+          -f lab_6/infra/k8s/helm/postgres-infra/values-dev.yaml
+
+      - name: Render app Helm dev
+        run: >
+          helm template task-model-app lab_6/app/k8s/helm/task-model-app
+          --namespace lab6-dev
+          -f lab_6/app/k8s/helm/task-model-app/values-dev.yaml

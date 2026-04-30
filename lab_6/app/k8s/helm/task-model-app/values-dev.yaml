@@ -1,0 +1,14 @@
+namespaceOverride: lab6-dev
+
+replicaCount: 1
+
+service:
+  type: NodePort
+  nodePort: 30081
+
+task:
+  description: "Task from lab_6 Helm dev values"
+  priority: "4"
+
+database:
+  url: postgresql://task_user:task_password_dev@postgres-0.postgres:5432/task_model

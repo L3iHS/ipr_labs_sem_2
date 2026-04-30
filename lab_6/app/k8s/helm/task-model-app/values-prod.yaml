@@ -1,0 +1,22 @@
+namespaceOverride: lab6-prod
+
+replicaCount: 2
+
+service:
+  type: NodePort
+  nodePort: 30082
+
+task:
+  description: "Task from lab_6 Helm prod values"
+  priority: "5"
+
+database:
+  url: postgresql://task_user:CHANGE_ME@postgres-0.postgres.lab6-prod.svc.cluster.local:5432/task_model
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi
