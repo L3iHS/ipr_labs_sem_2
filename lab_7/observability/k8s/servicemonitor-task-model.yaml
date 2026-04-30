@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: task-model-lab7
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: task-model
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s

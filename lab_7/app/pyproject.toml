@@ -1,0 +1,11 @@
+[project]
+name = "lab-7-task-model"
+version = "0.1.0"
+description = "Task model service with Prometheus metrics and OpenTelemetry tracing"
+requires-python = ">=3.12"
+dependencies = [
+    "prometheus-client>=0.23.1",
+    "opentelemetry-api>=1.39.0",
+    "opentelemetry-sdk>=1.39.0",
+    "opentelemetry-exporter-otlp-proto-http>=1.39.0",
+]
