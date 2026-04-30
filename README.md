@@ -33,9 +33,6 @@
 
 ## Docker
 
-Docker-образ — это упакованное приложение со всем, что нужно для запуска:
-Python, зависимости и исходный код.
-
 Собрать образ локально:
 
 ```bash
@@ -69,45 +66,6 @@ docker run --rm -p 8000:8000 \
 ```bash
 docker run --rm task-model:local pytest -q --cov=src --cov-report=term-missing
 ```
-
-## CI/CD
-
-CI/CD — это автоматическая проверка и сборка проекта.
-
-В этом проекте GitHub Actions делает следующее:
-
-1. Скачивает код из репозитория.
-2. Устанавливает Python 3.12.
-3. Устанавливает зависимости из `requirements.txt`.
-4. Запускает тесты.
-5. Если тесты прошли, собирает Docker-образ.
-6. Публикует Docker-образ в GitHub Container Registry.
-
-Образ собирается для двух архитектур: `linux/amd64` и `linux/arm64`. Это нужно,
-чтобы он запускался и на обычных x86-серверах, и на Mac с Apple Silicon.
-
-Файл с настройкой GitHub Actions:
-
-```text
-.github/workflows/ci-cd.yml
-```
-
-## Registry
-
-Registry — это хранилище Docker-образов.
-
-Код проекта хранится в GitHub-репозитории, а собранный Docker-образ хранится
-отдельно. Для этого используется GitHub Container Registry, его адрес начинается
-с `ghcr.io`.
-
-Пример имени образа:
-
-```text
-ghcr.io/l3ihs/ipr_labs_sem_2:latest
-```
-
-Дальше Kubernetes сможет взять этот образ из registry и запустить его в
-кластере.
 
 ## Kubernetes
 
@@ -153,65 +111,69 @@ kubectl delete namespace lab5
 
 ---
 
-# Исходная лабораторная работа №2: Модель задачи, дескрипторы и `@property`
-
-## Цель работы
-
-Освоить управление доступом к атрибутам объекта, валидацию состояния и защиту инвариантов модели
-
-## Постановка задачи
-
-Необходимо реализовать модель задачи `Task` в рамках платформы обработки задач
-
-Модель должна:
-- валидировать значения атрибутов через пользовательские дескрипторы
-- использовать `property` для вычисляемых и защищенных свойств
-- предотвращать перевод объекта в некорректное состояние
-- выбрасывать специализированные исключения при нарушении правил модели
-
-## Что реализовано
-
-- класс `Task`
-- `data descriptors` для атрибутов:
-  - `id`
-  - `description`
-  - `priority`
-  - `status`
-- `non-data descriptor` `status_label` для текстового представления статуса
-- `property` `created_at` для защищенного доступа ко времени создания
-- `property` `is_completed` для определения, завершена ли задача
-- исключения:
-  - `TaskError`
-  - `TaskValidationError`
-  - `TaskInvariantError`
-- защита инвариантов переходов статуса:
-  - `new -> in_progress`, `cancelled`
-  - `in_progress -> completed`, `cancelled`
-  - из `completed` переходы запрещены
-  - из `cancelled` переходы запрещены
-
-## Инварианты модели
-
-Для корректного объекта `Task` должны выполняться следующие условия:
-- `id` это положительное целое число
-- `description` это непустая строка
-- `priority` это целое число от 1 до 5
-- `status` это один из допустимых статусов
-- `created_at` задается при создании объекта
-- запрещены некорректные переходы между статусами
-
-## Запуск тестов
+## Результаты проверки
 
 ```bash
-pytest -q
+kubectl get all -n lab5
 ```
 
-## Проверка покрытия
+```text
+NAME                              READY   STATUS    RESTARTS   AGE
+pod/task-model-69966f8f7f-76kp5   1/1     Running   0          18h
+pod/task-model-69966f8f7f-v8tnc   1/1     Running   0          18h
+
+NAME                         TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+service/task-model-service   NodePort   10.99.131.238   <none>        80:30080/TCP   18h
+
+NAME                         READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/task-model   2/2     2            2           18h
+
+NAME                                    DESIRED   CURRENT   READY   AGE
+replicaset.apps/task-model-56d894496b   0         0         0       18h
+replicaset.apps/task-model-69966f8f7f   2         2         2       18h
+```
 
 ```bash
-pytest --cov=src --cov-report=term-missing
+kubectl get pods -n lab5
 ```
 
-При запуске `pytest --cov=src --cov-report=term-missing` общий отчет показывает
-покрытие 72%, потому что в расчет входит демонстрационный файл `src/main.py`.
-Основная бизнес-логика модели задачи покрыта тестами почти полностью.
+```text
+NAME                          READY   STATUS    RESTARTS   AGE
+task-model-69966f8f7f-76kp5   1/1     Running   0          18h
+task-model-69966f8f7f-v8tnc   1/1     Running   0          18h
+```
+
+```bash
+kubectl get configmap -n lab5
+```
+
+```text
+NAME                DATA   AGE
+kube-root-ca.crt    1      18h
+task-model-config   4      18h
+```
+
+```bash
+kubectl get secret -n lab5
+```
+
+```text
+NAME                TYPE     DATA   AGE
+task-model-secret   Opaque   1      18h
+```
+
+```bash
+curl http://localhost:30080/health
+```
+
+```text
+{"status": "ok", "service": "task-model"}
+```
+
+```bash
+curl http://localhost:30080/task
+```
+
+```text
+{"id": 1, "description": "Task from Kubernetes ConfigMap", "priority": 4, "status": "new", "status_label": "Новая", "is_completed": false, "created_at": "2026-04-30T15:13:07.423844"}
+```
